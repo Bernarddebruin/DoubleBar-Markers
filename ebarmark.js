@@ -133,7 +133,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                     },
                     markPoint :{
                       symbol: layout.qHyperCube.qMeasureInfo[0].marktPointShape,
-                      symbolSize: layout.qHyperCube.qMeasureInfo[0].marktPointSize,
+                      symbolSize: [layout.qHyperCube.qMeasureInfo[0].marktPointWidth, layout.qHyperCube.qMeasureInfo[0].marktPointHeight],
                       symbolOffset: [layout.qHyperCube.qMeasureInfo[0].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[0].marktPointOffSetHeight],
                       data : [(layout.qHyperCube.qMeasureInfo[0].marktpointMin?{type: 'min', name: 'lowest'}:{}),
                               (layout.qHyperCube.qMeasureInfo[0].marktpointMax?{type : 'max', name: 'Highest'}:{})],
@@ -155,7 +155,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                     },
                     markPoint :{
                       symbol: layout.qHyperCube.qMeasureInfo[1].marktPointShape,
-                      symbolSize: layout.qHyperCube.qMeasureInfo[1].marktPointSize,
+                      symbolSize: [layout.qHyperCube.qMeasureInfo[1].marktPointWidth, layout.qHyperCube.qMeasureInfo[1].marktPointHeight],
                       symbolOffset: [layout.qHyperCube.qMeasureInfo[1].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[1].marktPointOffSetHeight],
                       data : [(layout.qHyperCube.qMeasureInfo[1].marktpointMin?{type: 'min', name: 'lowest'}:{}),
                               (layout.qHyperCube.qMeasureInfo[1].marktpointMax?{type : 'max', name: 'Highest'}:{})],
