@@ -91,6 +91,14 @@ define(["./echarts-en", "qlik", "./definition",],function(echarts, qlik, definit
             })
         },)
       }
+      var legendDataCount = layout.qHyperCube.qMeasureInfo.length;
+      var legendData = []
+      var measuresInfo = layout.qHyperCube.qMeasureInfo
+      for (var i = 0; i < legendDataCount; i++) {
+          legendData.push(layout.qHyperCube.qMeasureInfo[i].qFallbackTitle)
+      }
+      console.log(legendData);
+
       console.log(seriesControl);
             if (layout.toolboxLine == true) {
               var lineAct = 'line'
@@ -113,8 +121,7 @@ define(["./echarts-en", "qlik", "./definition",],function(echarts, qlik, definit
                 trigger: 'axis'
             },
             legend: {
-                data:[layout.qHyperCube.qMeasureInfo[1].qFallbackTitle, layout.qHyperCube.qMeasureInfo[0].qFallbackTitle],
-                inactiveColor: '#ccc'
+              data: legendData,
             },
             toolbox: {
                 show : layout.toolboxHandle,
