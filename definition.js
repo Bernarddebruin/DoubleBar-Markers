@@ -196,11 +196,3 @@ define([], function(){
 
   }
 })
-// define([], function showMarkpoint(){
-//   if (layout.qHyperCube.qMeasureInfo[1].marktpointMin!=layout.qHyperCube.qMeasureInfo[1].marktpointMax) {
-//     return {[
-//       {type: 'min', name: 'lowest'},
-//       {type : 'max', name: 'Highest'}
-//     ]}
-//   }
-// })

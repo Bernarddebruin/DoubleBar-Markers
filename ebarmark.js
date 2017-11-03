@@ -37,45 +37,40 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
     paint: function($element, layout){
       var that = this;
       var xData = [];
-      var yData = [];
-      var cData = [];
       var matrix = layout.qHyperCube.qDataPages[0].qMatrix;
-      console.log (matrix)
       console.log(layout);
+      var dataMeasure = [];
+
+
       matrix.forEach(function(row){
         xData.push({
           value: row[0].qText
-        });
-        yData.push({
-          elemNumber: row[0].qElemNumber,
-          psuedoSelected: false,  //We'll use this to toggle the colours
-          dimensionLabel: row[0].qText,  // Store the label text for the tooltip
-          value: row[1].qNum, //The raw num will be used for the bar size
-          parsedValue: row[1].qText, //The friendly value can be used in the popup
-          measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-          extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
-          itemStyle: {  //This sets up the default colours for the bars
-            normal: {
+        });})
 
+
+      for (var i = 1; i < layout.qHyperCube.qDataPages["0"].qMatrix["0"].length; i++) {
+        dataMeasure[i-1] = [];
+        matrix.forEach(function(row){
+        dataMeasure[i-1].push({
+            elemNumber: row[0].qElemNumber,
+            psuedoSelected: false,  //We'll use this to toggle the colours
+            dimensionLabel: row[0].qText,  // Store the label text for the tooltip
+            value: row[i].qNum, //The raw num will be used for the bar size
+            parsedValue: row[1].qText, //The friendly value can be used in the popup
+            measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
+            extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
+            itemStyle: {  //This sets up the default colours for the bars
+              normal: {
+
+              }
             }
-          }
-        });
+          })
+        })
+        console.log(dataMeasure[i]);
+      };
+          console.log(dataMeasure);
 
-        cData.push({
-          elemNumber: row[0].qElemNumber,
-          psuedoSelected: false,  //We'll use this to toggle the colours
-          dimensionLabel: row[0].qText,  // Store the label text for the tooltip
-          value: row[2].qNum, //The raw num will be used for the bar size
-          parsedValue: row[1].qText, //The friendly value can be used in the popup
-          measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-          extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
-          itemStyle: {  //This sets up the default colours for the bars
-            normal: {
 
-            }
-          }
-        });
-      })
             if (layout.toolboxLine == true) {
               var lineAct = 'line'
             } else {
@@ -91,7 +86,6 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
             } else {
               var stackAct
             };
-
 
             var options = {
             tooltip : {
@@ -125,7 +119,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                 {
                     name:layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
                     type:'bar',
-                    data: yData,
+                    data: dataMeasure[0],
                     itemStyle: {
                       normal: {
                         color: layout.qHyperCube.qMeasureInfo[0].Colour.color
@@ -147,7 +141,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                 {
                     name: layout.qHyperCube.qMeasureInfo[1].qFallbackTitle,
                     type:'bar',
-                    data: cData,
+                    data: dataMeasure[1],
                     itemStyle: {
                       normal: {
                         color: layout.qHyperCube.qMeasureInfo[1].Colour.color
@@ -168,6 +162,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                 },
             ]
         };
+        console.log(dataMeasure);
       this.$scope.eChart.setOption(options);
     }
   }
