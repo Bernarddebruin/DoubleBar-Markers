@@ -1,5 +1,4 @@
-//https://ecomfe.github.io/echarts-examples/public/editor.html?c=bar1 <-- Source file from echarts
-define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definition,){
+define(["./echarts-en", "qlik", "./definition",],function(echarts, qlik, definition,){
   var app = qlik.currApp();
   return{
     definition: definition,
@@ -9,8 +8,8 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
           {
             qTop: 0,
             qLeft: 0,
-            qWidth: 3,
-            qHeight: 3333
+            qWidth: 10,
+            qHeight: 1000
           }
         ]
       }
@@ -40,7 +39,7 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
       var matrix = layout.qHyperCube.qDataPages[0].qMatrix;
       console.log(layout);
       var dataMeasure = [];
-
+      var seriesControl =[];
 
       matrix.forEach(function(row){
         xData.push({
@@ -66,11 +65,34 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
             }
           })
         })
-        console.log(dataMeasure[i]);
       };
-          console.log(dataMeasure);
 
-
+      for (var i = 1; i < layout.qHyperCube.qDataPages["0"].qMatrix["0"].length; i++) {
+        seriesControl[i-1] = [];
+        seriesControl[i-1].push({
+            name:layout.qHyperCube.qMeasureInfo[i-1].qFallbackTitle,
+            type:'bar',
+            data: dataMeasure[i],
+            itemStyle: {
+              normal: {
+                color: layout.qHyperCube.qMeasureInfo[i-1].Colour.color
+              }
+            },
+            markPoint :{
+              symbol: layout.qHyperCube.qMeasureInfo[i-1].marktPointShape,
+              symbolSize: [layout.qHyperCube.qMeasureInfo[i-1].marktPointWidth, layout.qHyperCube.qMeasureInfo[i-1].marktPointHeight],
+              symbolOffset: [layout.qHyperCube.qMeasureInfo[i-1].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[i-1].marktPointOffSetHeight],
+              data : [(layout.qHyperCube.qMeasureInfo[i-1].marktpointMin?{type: 'min', name: 'lowest'}:{}),
+                      (layout.qHyperCube.qMeasureInfo[i-1].marktpointMax?{type : 'max', name: 'Highest'}:{})],
+            },
+            markLine : (layout.qHyperCube.qMeasureInfo[i-1].marktLineShow===false?{}:{
+              data : [
+                  {name: 'average', type : 'average'}
+              ]
+            })
+        },)
+      }
+      console.log(seriesControl);
             if (layout.toolboxLine == true) {
               var lineAct = 'line'
             } else {
@@ -115,54 +137,9 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                     type : 'value'
                 }
             ],
-            series : [
-                {
-                    name:layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-                    type:'bar',
-                    data: dataMeasure[0],
-                    itemStyle: {
-                      normal: {
-                        color: layout.qHyperCube.qMeasureInfo[0].Colour.color
-                      }
-                    },
-                    markPoint :{
-                      symbol: layout.qHyperCube.qMeasureInfo[0].marktPointShape,
-                      symbolSize: [layout.qHyperCube.qMeasureInfo[0].marktPointWidth, layout.qHyperCube.qMeasureInfo[0].marktPointHeight],
-                      symbolOffset: [layout.qHyperCube.qMeasureInfo[0].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[0].marktPointOffSetHeight],
-                      data : [(layout.qHyperCube.qMeasureInfo[0].marktpointMin?{type: 'min', name: 'lowest'}:{}),
-                              (layout.qHyperCube.qMeasureInfo[0].marktpointMax?{type : 'max', name: 'Highest'}:{})],
-                    },
-                    markLine : (layout.qHyperCube.qMeasureInfo[0].marktLineShow===false?{}:{
-                      data : [
-                          {name: 'average', type : 'average'}
-                      ]
-                    })
-                },
-                {
-                    name: layout.qHyperCube.qMeasureInfo[1].qFallbackTitle,
-                    type:'bar',
-                    data: dataMeasure[1],
-                    itemStyle: {
-                      normal: {
-                        color: layout.qHyperCube.qMeasureInfo[1].Colour.color
-                      }
-                    },
-                    markPoint :{
-                      symbol: layout.qHyperCube.qMeasureInfo[1].marktPointShape,
-                      symbolSize: [layout.qHyperCube.qMeasureInfo[1].marktPointWidth, layout.qHyperCube.qMeasureInfo[1].marktPointHeight],
-                      symbolOffset: [layout.qHyperCube.qMeasureInfo[1].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[1].marktPointOffSetHeight],
-                      data : [(layout.qHyperCube.qMeasureInfo[1].marktpointMin?{type: 'min', name: 'lowest'}:{}),
-                              (layout.qHyperCube.qMeasureInfo[1].marktpointMax?{type : 'max', name: 'Highest'}:{})],
-                    },
-                    markLine : (layout.qHyperCube.qMeasureInfo[1].marktLineShow===false?{}:{
-                      data : [
-                          {name: 'average', type : 'average'}
-                      ]
-                    })
-                },
-            ]
+            series : seriesControl
         };
-        console.log(dataMeasure);
+        console.log(seriesControl);
       this.$scope.eChart.setOption(options);
     }
   }

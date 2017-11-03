@@ -10,8 +10,7 @@ define([], function(){
       },
       measures: {
         uses: "measures",
-        min: 2,
-        max: 2,
+        min: 1,
         items: {
           color: {
             ref: "qDef.Colour",
