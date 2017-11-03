@@ -68,11 +68,10 @@ define(["./echarts-en", "qlik", "./definition",],function(echarts, qlik, definit
       };
 
       for (var i = 1; i < layout.qHyperCube.qDataPages["0"].qMatrix["0"].length; i++) {
-        seriesControl[i-1] = [];
-        seriesControl[i-1].push({
+        seriesControl.push({
             name:layout.qHyperCube.qMeasureInfo[i-1].qFallbackTitle,
             type:'bar',
-            data: dataMeasure[i],
+            data: dataMeasure[i-1],
             itemStyle: {
               normal: {
                 color: layout.qHyperCube.qMeasureInfo[i-1].Colour.color
