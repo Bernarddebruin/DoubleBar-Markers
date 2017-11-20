@@ -1,5 +1,4 @@
-//https://ecomfe.github.io/echarts-examples/public/editor.html?c=bar1 <-- Source file from echarts
-define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definition,){
+define(["./echarts-en", "qlik", "./definition",],function(echarts, qlik, definition,){
   var app = qlik.currApp();
   return{
     definition: definition,
@@ -9,8 +8,8 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
           {
             qTop: 0,
             qLeft: 0,
-            qWidth: 3,
-            qHeight: 3333
+            qWidth: 10,
+            qHeight: 1000
           }
         ]
       }
@@ -37,45 +36,70 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
     paint: function($element, layout){
       var that = this;
       var xData = [];
-      var yData = [];
-      var cData = [];
       var matrix = layout.qHyperCube.qDataPages[0].qMatrix;
-      console.log (matrix)
       console.log(layout);
+      var dataMeasure = [];
+      var seriesControl =[];
+
       matrix.forEach(function(row){
         xData.push({
           value: row[0].qText
-        });
-        yData.push({
-          elemNumber: row[0].qElemNumber,
-          psuedoSelected: false,  //We'll use this to toggle the colours
-          dimensionLabel: row[0].qText,  // Store the label text for the tooltip
-          value: row[1].qNum, //The raw num will be used for the bar size
-          parsedValue: row[1].qText, //The friendly value can be used in the popup
-          measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-          extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
-          itemStyle: {  //This sets up the default colours for the bars
-            normal: {
+        });})
 
+
+      for (var i = 1; i < layout.qHyperCube.qDataPages["0"].qMatrix["0"].length; i++) {
+        dataMeasure[i-1] = [];
+        matrix.forEach(function(row){
+        dataMeasure[i-1].push({
+            elemNumber: row[0].qElemNumber,
+            psuedoSelected: false,  //We'll use this to toggle the colours
+            dimensionLabel: row[0].qText,  // Store the label text for the tooltip
+            value: row[i].qNum, //The raw num will be used for the bar size
+            parsedValue: row[1].qText, //The friendly value can be used in the popup
+            measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
+            extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
+            itemStyle: {  //This sets up the default colours for the bars
+              normal: {
+
+              }
             }
-          }
-        });
+          })
+        })
+      };
 
-        cData.push({
-          elemNumber: row[0].qElemNumber,
-          psuedoSelected: false,  //We'll use this to toggle the colours
-          dimensionLabel: row[0].qText,  // Store the label text for the tooltip
-          value: row[2].qNum, //The raw num will be used for the bar size
-          parsedValue: row[1].qText, //The friendly value can be used in the popup
-          measureLabel: layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-          extraInfo: ((row[2])?row[2].qText:''),  //This demonstrates that we can add extra info using additional measures
-          itemStyle: {  //This sets up the default colours for the bars
-            normal: {
+      for (var i = 1; i < layout.qHyperCube.qDataPages["0"].qMatrix["0"].length; i++) {
+        seriesControl.push({
+            name:layout.qHyperCube.qMeasureInfo[i-1].qFallbackTitle,
+            type:'bar',
+            data: dataMeasure[i-1],
+            itemStyle: {
+              normal: {
+                color: layout.qHyperCube.qMeasureInfo[i-1].Colour.color
+              }
+            },
+            markPoint :{
+              symbol: layout.qHyperCube.qMeasureInfo[i-1].marktPointShape,
+              symbolSize: [layout.qHyperCube.qMeasureInfo[i-1].marktPointWidth, layout.qHyperCube.qMeasureInfo[i-1].marktPointHeight],
+              symbolOffset: [layout.qHyperCube.qMeasureInfo[i-1].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[i-1].marktPointOffSetHeight],
+              data : [(layout.qHyperCube.qMeasureInfo[i-1].marktpointMin?{type: 'min', name: 'lowest'}:{}),
+                      (layout.qHyperCube.qMeasureInfo[i-1].marktpointMax?{type : 'max', name: 'Highest'}:{})],
+            },
+            markLine : (layout.qHyperCube.qMeasureInfo[i-1].marktLineShow===false?{}:{
+              data : [
+                  {name: 'average', type : 'average'}
+              ]
+            })
+        },)
+      }
+      var legendDataCount = layout.qHyperCube.qMeasureInfo.length;
+      var legendData = []
+      var measuresInfo = layout.qHyperCube.qMeasureInfo
+      for (var i = 0; i < legendDataCount; i++) {
+          legendData.push(layout.qHyperCube.qMeasureInfo[i].qFallbackTitle)
+      }
+      console.log(legendData);
 
-            }
-          }
-        });
-      })
+      console.log(seriesControl);
             if (layout.toolboxLine == true) {
               var lineAct = 'line'
             } else {
@@ -92,14 +116,12 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
               var stackAct
             };
 
-
             var options = {
             tooltip : {
                 trigger: 'axis'
             },
             legend: {
-                data:[layout.qHyperCube.qMeasureInfo[1].qFallbackTitle, layout.qHyperCube.qMeasureInfo[0].qFallbackTitle],
-                inactiveColor: '#ccc'
+              data: legendData,
             },
             toolbox: {
                 show : layout.toolboxHandle,
@@ -121,53 +143,9 @@ define(["./echarts-en", "qlik", "./definition"],function(echarts, qlik, definiti
                     type : 'value'
                 }
             ],
-            series : [
-                {
-                    name:layout.qHyperCube.qMeasureInfo[0].qFallbackTitle,
-                    type:'bar',
-                    data: yData,
-                    itemStyle: {
-                      normal: {
-                        color: layout.qHyperCube.qMeasureInfo[0].Colour.color
-                      }
-                    },
-                    markPoint :{
-                      symbol: layout.qHyperCube.qMeasureInfo[0].marktPointShape,
-                      symbolSize: layout.qHyperCube.qMeasureInfo[0].marktPointSize,
-                      symbolOffset: [layout.qHyperCube.qMeasureInfo[0].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[0].marktPointOffSetHeight],
-                      data : [(layout.qHyperCube.qMeasureInfo[0].marktpointMin?{type: 'min', name: 'lowest'}:{}),
-                              (layout.qHyperCube.qMeasureInfo[0].marktpointMax?{type : 'max', name: 'Highest'}:{})],
-                    },
-                    markLine : (layout.qHyperCube.qMeasureInfo[0].marktLineShow===false?{}:{
-                      data : [
-                          {name: 'average', type : 'average'}
-                      ]
-                    })
-                },
-                {
-                    name: layout.qHyperCube.qMeasureInfo[1].qFallbackTitle,
-                    type:'bar',
-                    data: cData,
-                    itemStyle: {
-                      normal: {
-                        color: layout.qHyperCube.qMeasureInfo[1].Colour.color
-                      }
-                    },
-                    markPoint :{
-                      symbol: layout.qHyperCube.qMeasureInfo[1].marktPointShape,
-                      symbolSize: layout.qHyperCube.qMeasureInfo[1].marktPointSize,
-                      symbolOffset: [layout.qHyperCube.qMeasureInfo[1].marktPointOffSetCenter, layout.qHyperCube.qMeasureInfo[1].marktPointOffSetHeight],
-                      data : [(layout.qHyperCube.qMeasureInfo[1].marktpointMin?{type: 'min', name: 'lowest'}:{}),
-                              (layout.qHyperCube.qMeasureInfo[1].marktpointMax?{type : 'max', name: 'Highest'}:{})],
-                    },
-                    markLine : (layout.qHyperCube.qMeasureInfo[1].marktLineShow===false?{}:{
-                      data : [
-                          {name: 'average', type : 'average'}
-                      ]
-                    })
-                },
-            ]
+            series : seriesControl
         };
+        console.log(seriesControl);
       this.$scope.eChart.setOption(options);
     }
   }
